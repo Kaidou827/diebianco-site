@@ -63,11 +63,20 @@ export async function POST(request: NextRequest) {
     // ------------------------------------------------------------------
     // 3 ) Send to HubSpot
     // ------------------------------------------------------------------
-    const hsRes = await fetch(hubspotUrl, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(hubspotPayload),
-    })
+    const controller = new AbortController()
+    const timeoutId = setTimeout(() => controller.abort(), 12000)
+
+    let hsRes: Response
+    try {
+      hsRes = await fetch(hubspotUrl, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(hubspotPayload),
+        signal: controller.signal,
+      })
+    } finally {
+      clearTimeout(timeoutId)
+    }
 
     if (hsRes.ok) {
       return NextResponse.json({ ok: true, message: "Erfolgreich gesendet!" })
@@ -86,6 +95,15 @@ export async function POST(request: NextRequest) {
     )
   } catch (err: unknown) {
     console.error("Server Error:", err)
+    if (err instanceof Error && err.name === "AbortError") {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "Zeitueberschreitung bei HubSpot. Bitte erneut versuchen.",
+        },
+        { status: 504 },
+      )
+    }
     return NextResponse.json(
       {
         ok: false,

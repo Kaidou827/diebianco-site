@@ -5,11 +5,9 @@ import type React from "react"
 import Image from "next/image"
 import { Mail, MapPin, Phone, Clock } from "lucide-react"
 import Navigation from "@/components/Navigation"
-import { useState, useEffect } from "react"
-import { useRouter } from "next/navigation"
+import { useState } from "react"
 
 export default function Kontakt() {
-  const router = useRouter()
   const [formData, setFormData] = useState({
     firstname: "",
     email: "",
@@ -18,27 +16,6 @@ export default function Kontakt() {
   })
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitMessage, setSubmitMessage] = useState("")
-
-  // Debug: Check if Cookiebot is loaded
-  useEffect(() => {
-    const checkCookiebot = () => {
-      console.log("Checking Cookiebot...")
-      console.log("window.Cookiebot:", (window as any).Cookiebot)
-      console.log("CookieConsent:", (window as any).CookieConsent)
-
-      // Force show cookie banner for testing
-      if ((window as any).Cookiebot) {
-        console.log("Cookiebot found!")
-        // Check consent status
-        console.log("Cookiebot consent:", (window as any).Cookiebot.consent)
-      }
-    }
-
-    // Check immediately and after a delay
-    checkCookiebot()
-    setTimeout(checkCookiebot, 2000)
-    setTimeout(checkCookiebot, 5000)
-  }, [])
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
     const { name, value } = e.target
@@ -114,7 +91,8 @@ export default function Kontakt() {
           message: "",
         })
         form.reset()
-        router.push("/kontakt/danke")
+        window.location.assign("/kontakt/danke")
+        return
       } else {
         console.error("Form submission failed:", json)
         setSubmitMessage(json.message || "Fehler beim Senden der Nachricht.")

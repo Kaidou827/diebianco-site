@@ -5,13 +5,11 @@ import type React from "react"
 import { useState, useRef } from "react"
 import Image from "next/image"
 import Navigation from "@/components/Navigation"
-import { useRouter } from "next/navigation"
 
 // Add this CSS for the shine effects
 import "../globals.css"
 
 const GemeinsamErleben = () => {
-  const router = useRouter()
   const formRef = useRef<HTMLDivElement>(null)
   const [formData, setFormData] = useState({
     recommenderName: "",
@@ -69,7 +67,8 @@ const GemeinsamErleben = () => {
 
       if (json.ok) {
         form.reset()
-        router.push("/gemeinsam-erleben/danke")
+        window.location.assign("/gemeinsam-erleben/danke")
+        return
       } else {
         setSubmitMessage(json.message || "Fehler beim Senden der Empfehlung.")
       }
