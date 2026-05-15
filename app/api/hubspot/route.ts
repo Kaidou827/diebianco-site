@@ -159,10 +159,11 @@ export async function POST(request: NextRequest) {
     }
 
     if (!emailSent) {
+      const reason = emailError ? ` (${emailError})` : ""
       return NextResponse.json(
         {
           ok: false,
-          message: "E-Mail Versand fehlgeschlagen. Bitte SMTP-Einstellungen in Vercel pruefen.",
+          message: `E-Mail Versand fehlgeschlagen. Bitte SMTP-Einstellungen in Vercel pruefen.${reason}`,
           emailSent: false,
           emailError,
         },
