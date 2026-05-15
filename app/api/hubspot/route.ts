@@ -51,7 +51,13 @@ export async function POST(request: NextRequest) {
         .filter(Boolean) ?? []
     const mailTo = configuredRecipients.length > 0 ? configuredRecipients : defaultRecipients
 
-    const smtpConfigured = Boolean(smtpHost && smtpPort && smtpUser && smtpPass && mailFrom)
+    const missingSmtpVars: string[] = []
+    if (!smtpHost) missingSmtpVars.push("SMTP_HOST")
+    if (!smtpPort || Number.isNaN(smtpPort)) missingSmtpVars.push("SMTP_PORT")
+    if (!smtpUser) missingSmtpVars.push("SMTP_USER")
+    if (!smtpPass) missingSmtpVars.push("SMTP_PASS")
+    if (!mailFrom) missingSmtpVars.push("MAIL_FROM")
+    const smtpConfigured = missingSmtpVars.length === 0
 
     const subjectPrefix = pageName ? `[${pageName}]` : "[Website Formular]"
     const textBody = [
@@ -68,10 +74,11 @@ export async function POST(request: NextRequest) {
       `Zeitpunkt: ${new Date().toISOString()}`,
     ].join("\n")
 
+    let emailSent = false
+    let emailError = ""
     if (!smtpConfigured) {
-      console.warn(
-        "SMTP env vars missing. Skipping email send and continuing with HubSpot sync. Required: SMTP_HOST, SMTP_PORT, SMTP_USER, SMTP_PASS, MAIL_FROM(optional).",
-      )
+      emailError = `Missing SMTP env vars: ${missingSmtpVars.join(", ")}`
+      console.error(emailError)
     } else {
       try {
         const transporter = nodemailer.createTransport({
@@ -91,8 +98,9 @@ export async function POST(request: NextRequest) {
           subject: `${subjectPrefix} Neue Anfrage von ${firstname}`,
           text: textBody,
         })
-      } catch (emailErr) {
-        // Do not block form completion if SMTP is temporarily unavailable.
+        emailSent = true
+      } catch (emailErr: unknown) {
+        emailError = emailErr instanceof Error ? emailErr.message : "Unknown SMTP error"
         console.error("SMTP email send failed:", emailErr)
       }
     }
@@ -148,6 +156,18 @@ export async function POST(request: NextRequest) {
       // Email was already sent successfully. Keep user flow intact if HubSpot sync fails.
       const text = await hsRes.text()
       console.error("HubSpot API Error:", hsRes.status, text)
+    }
+
+    if (!emailSent) {
+      return NextResponse.json(
+        {
+          ok: false,
+          message: "E-Mail Versand fehlgeschlagen. Bitte SMTP-Einstellungen in Vercel pruefen.",
+          emailSent: false,
+          emailError,
+        },
+        { status: 502 },
+      )
     }
 
     return NextResponse.json({ ok: true, message: "Erfolgreich gesendet!" })
