@@ -2,6 +2,8 @@ import type React from "react"
 import type { Metadata } from "next"
 import { Inter } from "next/font/google"
 import Script from "next/script"
+import GlobalFloatingCtas from "@/components/GlobalFloatingCtas"
+import ExitIntentHint from "@/components/ExitIntentHint"
 import "./globals.css"
 
 const inter = Inter({
@@ -104,6 +106,8 @@ export default function RootLayout({
 <meta name="google-site-verification" content="t0BF1OoHWoyvYxz3cXtyV0-n227wC3d2Lc9KTcBh6ak" />
         {/* Main Content */}
         {children}
+        <GlobalFloatingCtas />
+        <ExitIntentHint />
 
         {/* HubSpot Tracking - blockiert durch Cookiebot bis Marketing-Zustimmung - Only in production */}
         {process.env.NODE_ENV === "production" && (

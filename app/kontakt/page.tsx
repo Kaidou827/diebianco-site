@@ -3,7 +3,7 @@
 import type React from "react"
 
 import Image from "next/image"
-import { Mail, MapPin, Phone, Clock } from "lucide-react"
+import { Mail, MapPin, Phone, Clock, CheckCircle } from "lucide-react"
 import Navigation from "@/components/Navigation"
 import { useState } from "react"
 
@@ -30,8 +30,6 @@ export default function Kontakt() {
     const form = e.currentTarget as HTMLFormElement
     setIsSubmitting(true)
     setSubmitMessage("Sende...")
-
-    console.log("Form submission started with data:", formData)
 
     try {
       // Validate required fields
@@ -62,8 +60,6 @@ export default function Kontakt() {
         hutk: hutk || undefined,
       }
 
-      console.log("Sending payload to API:", payload)
-
       // Submit to HubSpot API
       const response = await fetch("/api/hubspot", {
         method: "POST",
@@ -81,9 +77,8 @@ export default function Kontakt() {
         throw new Error(`Unerwartete Antwort: ${txt}`)
       }
 
-      console.log("API Response:", json)
-
       if (json.ok) {
+        const encodedName = encodeURIComponent(formData.firstname.trim())
         setFormData({
           firstname: "",
           email: "",
@@ -91,7 +86,7 @@ export default function Kontakt() {
           message: "",
         })
         form.reset()
-        window.location.assign("/kontakt/danke")
+        window.location.assign(`/kontakt/danke?name=${encodedName}`)
         return
       } else {
         console.error("Form submission failed:", json)
@@ -128,8 +123,21 @@ export default function Kontakt() {
 
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
             {/* Contact Form - Now with black/20 blur effect */}
-            <div className="lg:col-span-3 backdrop-blur-md bg-black/20 rounded-md p-8 md:p-10 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.1)] border border-white/10">
-              <h3 className="font-serif text-2xl mb-8 text-white">Nachricht senden</h3>
+            <div
+              id="kontakt-formular"
+              className="lg:col-span-3 backdrop-blur-md bg-black/20 rounded-md p-8 md:p-10 shadow-[0_20px_70px_-15px_rgba(0,0,0,0.1)] border border-white/10"
+            >
+              <div className="mb-6 rounded-md border border-white/10 bg-black/25 p-4">
+                <p className="text-sm text-white/80 mb-3">Du erreichst uns Mi-Sa von 09:00 bis 17:15 Uhr.</p>
+                <a
+                  href="tel:+491743091973"
+                  className="inline-flex items-center justify-center px-4 py-2 text-sm font-semibold text-white bg-gradient-to-r from-[#D4C6A6] to-[#B8A082] rounded-full hover:from-[#B8A082] hover:to-[#D4C6A6] transition-all duration-300"
+                >
+                  Lieber anrufen? +49 174 3091973
+                </a>
+              </div>
+              <h3 className="font-serif text-2xl mb-2 text-white">Termin anfragen - wir melden uns innerhalb von 24 Stunden.</h3>
+              <p className="text-white/80 mb-8">Einfach Formular ausfuellen, Teresa meldet sich persoenlich bei dir.</p>
               <form onSubmit={onSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
@@ -202,6 +210,25 @@ export default function Kontakt() {
                 >
                   {isSubmitting ? "Sende..." : "Nachricht senden"}
                 </button>
+
+                <div className="rounded-md border border-white/10 bg-black/25 p-4">
+                  <p className="italic text-white/90">&quot;Ich melde mich persoenlich bei dir - versprochen.&quot;</p>
+                  <p className="mt-1 text-sm text-[#D4C6A6]">- Teresa Bianco</p>
+                  <ul className="mt-4 space-y-2 text-sm text-white/85">
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-[#D4C6A6]" />
+                      Persoenliche Beratung
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-[#D4C6A6]" />
+                      Antwort innerhalb von 24h
+                    </li>
+                    <li className="flex items-center gap-2">
+                      <CheckCircle className="h-4 w-4 text-[#D4C6A6]" />
+                      Keine Verpflichtung
+                    </li>
+                  </ul>
+                </div>
               </form>
               {submitMessage && (
                 <div
