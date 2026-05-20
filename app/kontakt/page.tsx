@@ -121,6 +121,76 @@ export default function Kontakt() {
             </p>
           </div>
 
+          <div className="max-w-3xl mx-auto mb-10 text-center">
+            <p className="inline-flex items-center justify-center rounded-full bg-white/70 px-5 py-2 text-sm md:text-base text-[#2C2C2C]">
+              <span className="text-[#D4C6A6] mr-2">⭐⭐⭐⭐⭐</span>
+              5,0 von 5 · 16 Google Bewertungen (Stand Mai 2026)
+            </p>
+          </div>
+
+          <div className="max-w-5xl mx-auto mb-10">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              <div className="rounded-md border border-white/10 bg-black/15 p-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="relative h-52 rounded-md overflow-hidden">
+                      <Image src="/kunde-1-vorher.jpg" alt="Kunde 1 Vorher" fill className="object-cover" />
+                    </div>
+                    <p className="mt-2 text-center text-sm text-[#D4C6A6]">Vorher</p>
+                  </div>
+                  <div>
+                    <div className="relative h-52 rounded-md overflow-hidden">
+                      <Image src="/kunde-1-nachher.jpg" alt="Kunde 1 Nachher" fill className="object-cover" />
+                    </div>
+                    <p className="mt-2 text-center text-sm text-[#D4C6A6]">Nachher</p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="rounded-md border border-white/10 bg-black/15 p-4">
+                <div className="grid grid-cols-2 gap-3">
+                  <div>
+                    <div className="relative h-52 rounded-md overflow-hidden">
+                      <Image src="/kunde-2-vorher.jpg" alt="Kunde 2 Vorher" fill className="object-cover" />
+                    </div>
+                    <p className="mt-2 text-center text-sm text-[#D4C6A6]">Vorher</p>
+                  </div>
+                  <div>
+                    <div className="relative h-52 rounded-md overflow-hidden">
+                      <Image src="/kunde-2-nachher.jpg" alt="Kunde 2 Nachher" fill className="object-cover" />
+                    </div>
+                    <p className="mt-2 text-center text-sm text-[#D4C6A6]">Nachher</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="max-w-6xl mx-auto mb-12">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div className="rounded-md border border-white/10 bg-black/20 p-5">
+                <p className="text-[#D4C6A6] text-sm mb-2">Katja E. · ★★★★★</p>
+                <p className="text-white/90 text-sm leading-relaxed">
+                  &quot;Absolute Spitzenklasse - ein Salon, den ich von Herzen weiterempfehle. Ich habe ohne Zweifel den
+                  schönsten Haarschnitt meines Lebens erhalten.&quot;
+                </p>
+              </div>
+              <div className="rounded-md border border-white/10 bg-black/20 p-5">
+                <p className="text-[#D4C6A6] text-sm mb-2">N. Hales · ★★★★★</p>
+                <p className="text-white/90 text-sm leading-relaxed">
+                  &quot;Wer einmal dort war, wird nie wieder zu einem anderen Salon gehen. Absolute Profis das ganze Team.&quot;
+                </p>
+              </div>
+              <div className="rounded-md border border-white/10 bg-black/20 p-5">
+                <p className="text-[#D4C6A6] text-sm mb-2">Sophia K. · ★★★★★</p>
+                <p className="text-white/90 text-sm leading-relaxed">
+                  &quot;Meinen Friseur des Vertrauens hab ich gefunden! Man fühlt sich super wohl und verbringt dort gerne
+                  seine Zeit.&quot;
+                </p>
+              </div>
+            </div>
+          </div>
+
           <div className="grid grid-cols-1 lg:grid-cols-5 gap-12 items-start">
             {/* Contact Form - Now with black/20 blur effect */}
             <div

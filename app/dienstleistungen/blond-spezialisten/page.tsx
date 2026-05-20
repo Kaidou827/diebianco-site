@@ -176,6 +176,48 @@ export default function BlondSpezialistenPage() {
         </div>
       </section>
 
+      <section className="py-16 md:py-24 bg-[#b4b1aa]">
+        <div className="container mx-auto px-4">
+          <h2 className="font-serif text-3xl md:text-4xl text-[#D4C6A6] mb-10 text-center">Unsere Ergebnisse</h2>
+
+          <div className="max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="rounded-md border border-white/10 bg-black/15 p-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="relative h-52 rounded-md overflow-hidden">
+                    <Image src="/kunde-1-vorher.jpg" alt="Kunde 1 Vorher" fill className="object-cover" />
+                  </div>
+                  <p className="mt-2 text-center text-sm text-[#D4C6A6]">Vorher</p>
+                </div>
+                <div>
+                  <div className="relative h-52 rounded-md overflow-hidden">
+                    <Image src="/kunde-1-nachher.jpg" alt="Kunde 1 Nachher" fill className="object-cover" />
+                  </div>
+                  <p className="mt-2 text-center text-sm text-[#D4C6A6]">Nachher</p>
+                </div>
+              </div>
+            </div>
+
+            <div className="rounded-md border border-white/10 bg-black/15 p-4">
+              <div className="grid grid-cols-2 gap-3">
+                <div>
+                  <div className="relative h-52 rounded-md overflow-hidden">
+                    <Image src="/kunde-2-vorher.jpg" alt="Kunde 2 Vorher" fill className="object-cover" />
+                  </div>
+                  <p className="mt-2 text-center text-sm text-[#D4C6A6]">Vorher</p>
+                </div>
+                <div>
+                  <div className="relative h-52 rounded-md overflow-hidden">
+                    <Image src="/kunde-2-nachher.jpg" alt="Kunde 2 Nachher" fill className="object-cover" />
+                  </div>
+                  <p className="mt-2 text-center text-sm text-[#D4C6A6]">Nachher</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
       {/* CTA Section */}
       <section className="py-16 md:py-24 bg-[#b4b1aa]">
         <div className="container mx-auto px-4">
