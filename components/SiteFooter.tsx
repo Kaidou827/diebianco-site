@@ -1,4 +1,5 @@
 import Image from "next/image"
+import { openingHours } from "@/lib/site-info"
 
 export default function SiteFooter() {
   return (
@@ -20,7 +21,7 @@ export default function SiteFooter() {
             </div>
             <div className="w-12 h-px bg-gradient-to-r from-[#D4C6A6] to-transparent mt-2" />
             <p className="text-white/70 leading-relaxed mb-6">
-              Ihr exklusiver Rueckzugsort fuer authentische Schoenheit und ungestoerte Momente der Pflege und Entspannung.
+              Ihr exklusiver Rückzugsort für authentische Schönheit und ungestörte Momente der Pflege und Entspannung.
             </p>
           </div>
 
@@ -42,12 +43,14 @@ export default function SiteFooter() {
           </div>
 
           <div className="md:col-span-3 md:col-start-10">
-            <h3 className="font-serif text-lg mb-4 text-[#D4C6A6]">Oeffnungszeiten</h3>
+            <h3 className="font-serif text-lg mb-4 text-[#D4C6A6]">Öffnungszeiten</h3>
             <div className="text-white/70 space-y-2">
-              <p>Mi - Fr: 09:00 - 17:15 Uhr</p>
-              <p>Sa: 07:00 - 14:00 Uhr</p>
-              <p>Mo, Di, So: Geschlossen</p>
-              <p className="text-sm italic">Termine nach Vereinbarung</p>
+              {openingHours.map((entry) => (
+                <p key={entry.day}>
+                  <span className="inline-block min-w-[100px]">{entry.day}</span>
+                  <span>{entry.hours}</span>
+                </p>
+              ))}
             </div>
           </div>
         </div>

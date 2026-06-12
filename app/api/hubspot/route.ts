@@ -17,6 +17,10 @@ export async function POST(request: NextRequest) {
       pageUri,
       pageName,
       hutk,
+      wunschleistung,
+      honeypot,
+      turnstileToken,
+      spamProtectionRequired,
     }: {
       firstname?: string
       email?: string
@@ -25,6 +29,10 @@ export async function POST(request: NextRequest) {
       pageUri?: string
       pageName?: string
       hutk?: string
+      wunschleistung?: string
+      honeypot?: string
+      turnstileToken?: string
+      spamProtectionRequired?: boolean
     } = await request.json()
 
     // ------------------------------------------------------------------
@@ -32,6 +40,46 @@ export async function POST(request: NextRequest) {
     // ------------------------------------------------------------------
     if (!firstname || !email || !phone) {
       return NextResponse.json({ ok: false, message: "Name, E-Mail und Telefon sind erforderlich." }, { status: 400 })
+    }
+
+    // ------------------------------------------------------------------
+    // 1.5 ) Anti-spam checks for protected forms
+    // ------------------------------------------------------------------
+    if (spamProtectionRequired) {
+      if (honeypot && honeypot.trim().length > 0) {
+        return NextResponse.json({ ok: false, message: "Anfrage konnte nicht validiert werden." }, { status: 400 })
+      }
+
+      if (!turnstileToken) {
+        return NextResponse.json({ ok: false, message: "Bitte CAPTCHA-Validierung abschliessen." }, { status: 400 })
+      }
+
+      const turnstileSecret = process.env.TURNSTILE_SECRET_KEY
+      if (!turnstileSecret) {
+        console.warn("TURNSTILE_SECRET_KEY is missing; skipping CAPTCHA verification.")
+      } else {
+        const forwardedFor = request.headers.get("x-forwarded-for") ?? ""
+        const ip = forwardedFor.split(",")[0].trim()
+
+        const verificationBody = new URLSearchParams({
+          secret: turnstileSecret,
+          response: turnstileToken,
+        })
+        if (ip) verificationBody.append("remoteip", ip)
+
+        const turnstileRes = await fetch("https://challenges.cloudflare.com/turnstile/v0/siteverify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded",
+          },
+          body: verificationBody.toString(),
+        })
+
+        const turnstileJson = (await turnstileRes.json()) as { success?: boolean }
+        if (!turnstileJson.success) {
+          return NextResponse.json({ ok: false, message: "CAPTCHA-Validierung fehlgeschlagen." }, { status: 400 })
+        }
+      }
     }
 
     // ------------------------------------------------------------------
@@ -66,6 +114,7 @@ export async function POST(request: NextRequest) {
       `Name: ${firstname}`,
       `E-Mail: ${email}`,
       `Telefon: ${phone}`,
+      `Wunschleistung: ${wunschleistung || "-"}`,
       `Nachricht: ${message || "-"}`,
       "",
       `Seite: ${pageName || "-"}`,
@@ -129,6 +178,7 @@ export async function POST(request: NextRequest) {
         { name: "email", value: email },
         { name: "phone", value: phone },
         { name: "message", value: message ?? "" },
+        { name: "wunschleistung", value: wunschleistung ?? "" },
       ],
       context,
     }

@@ -3,11 +3,16 @@
 import type React from "react"
 
 import Image from "next/image"
+import Script from "next/script"
 import { Mail, MapPin, Phone, Clock, CheckCircle } from "lucide-react"
 import Navigation from "@/components/Navigation"
 import { useState } from "react"
+import SiteFooter from "@/components/SiteFooter"
 
 export default function Kontakt() {
+  const turnstileSiteKey = process.env.NEXT_PUBLIC_TURNSTILE_SITE_KEY || ""
+  const isTurnstileEnabled = turnstileSiteKey.length > 0
+
   const [formData, setFormData] = useState({
     firstname: "",
     email: "",
@@ -28,6 +33,9 @@ export default function Kontakt() {
   const onSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const form = e.currentTarget as HTMLFormElement
+    const honeypotValue = (form.querySelector('input[name="website"]') as HTMLInputElement | null)?.value || ""
+    const turnstileToken =
+      (form.querySelector('input[name="cf-turnstile-response"]') as HTMLInputElement | null)?.value || ""
     setIsSubmitting(true)
     setSubmitMessage("Sende...")
 
@@ -35,6 +43,12 @@ export default function Kontakt() {
       // Validate required fields
       if (!formData.firstname || !formData.email || !formData.phone) {
         setSubmitMessage("Name, E-Mail und Telefon sind erforderlich.")
+        setIsSubmitting(false)
+        return
+      }
+
+      if (isTurnstileEnabled && !turnstileToken) {
+        setSubmitMessage("Bitte CAPTCHA-Validierung abschliessen.")
         setIsSubmitting(false)
         return
       }
@@ -58,6 +72,9 @@ export default function Kontakt() {
         pageUri: window.location.href,
         pageName: document.title,
         hutk: hutk || undefined,
+        honeypot: honeypotValue,
+        turnstileToken: isTurnstileEnabled ? turnstileToken : undefined,
+        spamProtectionRequired: isTurnstileEnabled,
       }
 
       // Submit to HubSpot API
@@ -102,6 +119,9 @@ export default function Kontakt() {
 
   return (
     <div className="bg-[#b4b1aa] text-white min-h-screen">
+      {isTurnstileEnabled && (
+        <Script src="https://challenges.cloudflare.com/turnstile/v0/api.js" strategy="afterInteractive" />
+      )}
       {/* Standardized Navigation Component */}
       <Navigation />
 
@@ -124,7 +144,7 @@ export default function Kontakt() {
           <div className="max-w-3xl mx-auto mb-10 text-center">
             <p className="inline-flex items-center justify-center rounded-full bg-white/70 px-5 py-2 text-sm md:text-base text-[#2C2C2C]">
               <span className="text-[#D4C6A6] mr-2">⭐⭐⭐⭐⭐</span>
-              5,0 von 5 · 16 Google Bewertungen (Stand Mai 2026)
+              5,0 von 5 Sternen bei Google
             </p>
           </div>
 
@@ -209,6 +229,11 @@ export default function Kontakt() {
               <h3 className="font-serif text-2xl mb-2 text-white">Termin anfragen - wir melden uns innerhalb von 24 Stunden.</h3>
               <p className="text-white/80 mb-8">Einfach Formular ausfuellen, Teresa meldet sich persoenlich bei dir.</p>
               <form onSubmit={onSubmit} className="space-y-6">
+                <div aria-hidden="true" className="absolute -left-[10000px] top-auto w-px h-px overflow-hidden">
+                  <label htmlFor="website">Website</label>
+                  <input id="website" name="website" type="text" tabIndex={-1} autoComplete="off" />
+                </div>
+
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="firstname" className="block text-sm font-medium text-white/80 mb-2">
@@ -280,6 +305,15 @@ export default function Kontakt() {
                 >
                   {isSubmitting ? "Sende..." : "Nachricht senden"}
                 </button>
+
+                {isTurnstileEnabled && (
+                  <div
+                    className="cf-turnstile"
+                    data-sitekey={turnstileSiteKey}
+                    data-theme="light"
+                    data-size="flexible"
+                  />
+                )}
 
                 <div className="rounded-md border border-white/10 bg-black/25 p-4">
                   <p className="italic text-white/90">&quot;Ich melde mich persoenlich bei dir - versprochen.&quot;</p>
@@ -407,169 +441,7 @@ export default function Kontakt() {
       </section>
 
       {/* Footer - Same as other pages */}
-      <footer className="bg-[#2C2C2C] text-white relative overflow-hidden">
-        {/* Decorative Elements */}
-        <div className="absolute top-0 left-0 w-full h-px bg-gradient-to-r from-transparent via-[rgb(212,198,166)]/30 to-transparent"></div>
-        <div className="absolute top-0 right-0 w-1/3 h-full bg-[rgb(212,198,166)]/3 -skew-x-12 transform origin-top-right opacity-30"></div>
-
-        {/* Main Area */}
-        <div className="container px-4 md:px-6 py-16 md:py-20 relative z-10">
-          <div className="grid grid-cols-1 md:grid-cols-12 gap-10">
-            {/* Logo and Description */}
-            <div className="md:col-span-4">
-              <div className="h-20 mb-6">
-                <Image
-                  src="/Die_Bianco_Logo.png"
-                  alt="DIE BIANCO"
-                  width={240}
-                  height={72}
-                  className="h-full w-auto object-contain"
-                />
-              </div>
-              <div className="w-12 h-px bg-gradient-to-r from-[rgb(212,198,166)] to-transparent mt-2"></div>
-              <p className="text-white/70 leading-relaxed mb-6">
-                Ihr exklusiver Rückzugsort für authentische Schönheit und ungestörte Momente der Pflege und Entspannung.
-              </p>
-            </div>
-
-            {/* Contact */}
-            <div className="md:col-span-3 md:col-start-6">
-              <h3 className="font-serif text-lg mb-4 text-[rgb(212,198,166)]">Kontakt</h3>
-              <address className="not-italic text-white/70 space-y-3">
-                <p className="flex items-start">
-                  <svg
-                    className="w-5 h-5 mr-3 text-[rgb(212,198,166)] flex-shrink-0 mt-0.5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path>
-                    <circle cx="12" cy="10" r="3"></circle>
-                  </svg>
-                  <span>
-                    Siedlung Egelsberg 1
-                    <br />
-                    47802 Krefeld
-                  </span>
-                </p>
-                <p className="flex items-start">
-                  <svg
-                    className="w-5 h-5 mr-3 text-[rgb(212,198,166)] flex-shrink-0 mt-0.5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"></path>
-                  </svg>
-                  <span>+49 174 3091973</span>
-                </p>
-                <p className="flex items-start">
-                  <svg
-                    className="w-5 h-5 mr-3 text-[rgb(212,198,166)] flex-shrink-0 mt-0.5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"></path>
-                    <polyline points="22,6 12,13 2,6"></polyline>
-                  </svg>
-                  <span>salon@diebianco.de</span>
-                </p>
-              </address>
-            </div>
-
-            {/* Opening Hours */}
-            <div className="md:col-span-3 md:col-start-10">
-              <h3 className="font-serif text-lg mb-4 text-[rgb(212,198,166)]">Öffnungszeiten</h3>
-              <div className="text-white/70 space-y-3">
-                <p className="flex items-start">
-                  <svg
-                    className="w-5 h-5 mr-3 text-[rgb(212,198,166)] flex-shrink-0 mt-0.5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <polyline points="12 6 12 12 16 14"></polyline>
-                  </svg>
-                  <span>
-                    Mi - Fr: 09:00 - 17:15 Uhr
-                    <br />
-                    Sa: 07:00 - 14:00 Uhr
-                    <br />
-                    Mo, Di, So: Geschlossen
-                  </span>
-                </p>
-                <p className="flex items-start">
-                  <svg
-                    className="w-5 h-5 mr-3 text-[rgb(212,198,166)] flex-shrink-0 mt-0.5"
-                    xmlns="http://www.w3.org/2000/svg"
-                    width="24"
-                    height="24"
-                    viewBox="0 0 24 24"
-                    fill="none"
-                    stroke="currentColor"
-                    strokeWidth="1.5"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  >
-                    <rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect>
-                    <line x1="16" y1="2" x2="16" y2="6"></line>
-                    <line x1="8" y1="2" x2="8" y2="6"></line>
-                    <line x1="3" y1="10" x2="21" y2="10"></line>
-                  </svg>
-                  <span>Termine nach Vereinbarung</span>
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Divider */}
-          <div className="border-t border-white/10 mt-12 pt-8">
-            <div className="flex flex-col md:flex-row justify-between items-center">
-              <p className="text-white/50 text-sm">© {new Date().getFullYear()} DIE BIANCO. Alle Rechte vorbehalten.</p>
-              <div className="flex gap-6 mt-4 md:mt-0">
-                <a href="/impressum" className="text-white/50 text-sm hover:text-[rgb(212,198,166)] transition-colors">
-                  Impressum
-                </a>
-                <a href="/datenschutz" className="text-white/50 text-sm hover:text-[rgb(212,198,166)] transition-colors">
-                  Datenschutz
-                </a>
-                <a href="#" className="text-white/50 text-sm hover:text-[rgb(212,198,166)] transition-colors">
-                  AGB
-                </a>
-                <a href="/mentoring" className="text-white/50 text-sm hover:text-[#D4C6A6] transition-colors">
-                  Mentoring
-                </a>
-              </div>
-            </div>
-          </div>
-        </div>
-      </footer>
+      <SiteFooter />
     </div>
   )
 }
