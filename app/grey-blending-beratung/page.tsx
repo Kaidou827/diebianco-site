@@ -141,8 +141,8 @@ export default function GreyBlendingBeratungPage() {
             </p>
           </div>
 
-          <div className="max-w-5xl mx-auto mb-10">
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 justify-items-center">
+          <div className="max-w-3xl mx-auto mb-10">
+            <div className="grid grid-cols-1 gap-6 justify-items-center">
               <div className="w-full max-w-[480px] rounded-md border border-white/10 bg-black/15 p-4">
                 <div className="grid grid-cols-2 gap-3">
                   <div>
@@ -158,18 +158,6 @@ export default function GreyBlendingBeratungPage() {
                     <p className="mt-2 text-center text-sm text-[#D4C6A6]">Nachher</p>
                   </div>
                 </div>
-              </div>
-
-              <div className="w-full max-w-[480px] rounded-md border border-white/10 bg-black/15 p-4">
-                <div className="relative h-52 rounded-md overflow-hidden">
-                  <Image
-                    src="/ergebnisse/look08-frontal-nachher.webp"
-                    alt="Grey Blending Ergebnis"
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-                <p className="mt-2 text-center text-sm text-[#D4C6A6]">Nachher</p>
               </div>
             </div>
           </div>
